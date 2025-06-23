@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react"
 import { assets } from "../../assets/assets"
 import { AppContext } from "../../context/AppContext"
+import { addCategory } from "../../Service/CategoryService"
+import toast from "react-hot-toast"
 
 const CategoryForm = () => {
 
@@ -25,11 +27,11 @@ const CategoryForm = () => {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        setLoading(true)
         if(!image) {
             toast.error("Select image for category")
             return
         }
+        setLoading(true)
         const formData = new FormData()
         formData.append("category", JSON.stringify(data))
         formData.append("file", image)
@@ -37,6 +39,8 @@ const CategoryForm = () => {
             const response = await addCategory(formData)
             if(response.status === 201) {
                 setCategories([...categories, response.data])
+                console.log(response)
+                console.log(categories)
                 toast.success("Category added")
                 setData({
                     name: "",
@@ -86,20 +90,24 @@ const CategoryForm = () => {
                                     placeholder="Write content here..."
                                     onChange={onChangeHandler}
                                     value={data.description}
-                                    >
-                                    </textarea>
+                                />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="bgcolor" className="form-label">Background color</label>
                                 <br/>
                                 <input type="color"
-                                        name="bgColor"
-                                        id="bgcolor"
-                                        placeholder="#ffffff"
-                                        onChange={onChangeHandler}
-                                        value={data.bgColor} />
+                                    name="bgColor"
+                                    id="bgcolor"
+                                    placeholder="#ffffff"
+                                    onChange={onChangeHandler}
+                                    value={data.bgColor}
+                                />
                             </div>
-                            <button type="submit" className="btn btn-warning w-100">Save</button>
+                            <button type="submit" 
+                                disabled={loading}
+                                className="btn btn-warning w-100"> 
+                                {loading? "Loading...": "Submit"}
+                            </button>
                         </form>
                     </div>
                 </div>
